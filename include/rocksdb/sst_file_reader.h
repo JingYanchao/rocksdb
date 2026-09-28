@@ -34,15 +34,19 @@ class SstFileReader {
   Iterator* NewIterator(const ReadOptions& options);
 
   // MultiGet to fetch a set of keys from the SST
+  // sorted_input: if true, keys must already be sorted by the comparator
+  // order and the internal sort is skipped
   std::vector<Status> MultiGet(const ReadOptions& options,
                                const std::vector<Slice>& keys,
-                               std::vector<std::string>* values);
+                               std::vector<std::string>* values,
+                               bool sorted_input = false);
 
   // MultiGet variant that returns PinnableSlice values, enabling zero-copy
   // when the underlying TableReader supports pinning.
   std::vector<Status> MultiGet(const ReadOptions& options,
                                const std::vector<Slice>& keys,
-                               std::vector<PinnableSlice>* values);
+                               std::vector<PinnableSlice>* values,
+                               bool sorted_input = false);
 
   // Point lookup a single key from the SST.
   Status Get(const ReadOptions& options, const Slice& key, std::string* value);

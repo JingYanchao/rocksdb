@@ -86,15 +86,17 @@ Status SstFileReader::Open(const std::string& file_path) {
 
 std::vector<Status> SstFileReader::MultiGet(
     const ReadOptions& roptions, const std::vector<Slice>& keys,
-    std::vector<PinnableSlice>* values) {
-  return rep_->MultiGet(roptions, keys, values);
+    std::vector<PinnableSlice>* values, bool sorted_input) {
+  return rep_->MultiGet(roptions, keys, values, sorted_input);
 }
 
 std::vector<Status> SstFileReader::MultiGet(const ReadOptions& roptions,
                                             const std::vector<Slice>& keys,
-                                            std::vector<std::string>* values) {
+                                            std::vector<std::string>* values,
+                                            bool sorted_input) {
   std::vector<PinnableSlice> pin_values;
-  std::vector<Status> statuses = MultiGet(roptions, keys, &pin_values);
+  std::vector<Status> statuses =
+      MultiGet(roptions, keys, &pin_values, sorted_input);
   values->resize(keys.size());
   for (size_t i = 0; i < keys.size(); ++i) {
     if (statuses[i].ok()) {

@@ -32,7 +32,7 @@ struct SstFileReader::Rep {
   DECLARE_SYNC_AND_ASYNC(std::vector<Status>, MultiGet,
                          const ReadOptions& roptions,
                          const std::vector<Slice>& keys,
-                         std::vector<PinnableSlice>* values);
+                         std::vector<PinnableSlice>* values, bool sorted_input);
   DECLARE_SYNC_AND_ASYNC(Status, Get, const ReadOptions& roptions,
                          const Slice& key, PinnableSlice* value);
 

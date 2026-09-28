@@ -278,7 +278,8 @@ folly::coro::Task<std::vector<Status>> CoroDB::CoMultiGet(
                                              task_env);
       co_return co_await folly::coro::co_nothrow(
           task_reader->rep_->MultiGetCoroutine(task_options, task_keys,
-                                               task_values));
+                                               task_values,
+                                               /*sorted_input=*/false));
     }(std::move(stats_config), rep->options.env, reader, options, keys, values);
     statuses = co_await folly::coro::co_nothrow(folly::coro::co_withExecutor(
         folly::Executor::getKeepAliveToken(read_event_base), std::move(task)));

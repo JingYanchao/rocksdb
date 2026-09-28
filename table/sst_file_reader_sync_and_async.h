@@ -12,7 +12,7 @@ namespace ROCKSDB_NAMESPACE {
 
 DEFINE_SYNC_AND_ASYNC(std::vector<Status>, SstFileReader::Rep::MultiGet)
 (const ReadOptions& roptions, const std::vector<Slice>& keys,
- std::vector<PinnableSlice>* values) {
+ std::vector<PinnableSlice>* values, bool sorted_input) {
   const size_t num_keys = keys.size();
   std::vector<Status> statuses(num_keys);
   values->resize(num_keys);
@@ -58,8 +58,13 @@ DEFINE_SYNC_AND_ASYNC(std::vector<Status>, SstFileReader::Rep::MultiGet)
     const Comparator* comparator;
   };
 
-  std::sort(sorted_keys.begin(), sorted_keys.end(),
-            CompareKeyContext(user_comparator));
+  if (sorted_input) {
+    assert(std::is_sorted(sorted_keys.begin(), sorted_keys.end(),
+                          CompareKeyContext(user_comparator)));
+  } else {
+    std::sort(sorted_keys.begin(), sorted_keys.end(),
+              CompareKeyContext(user_comparator));
+  }
   const SequenceNumber sequence = roptions.snapshot != nullptr
                                       ? roptions.snapshot->GetSequenceNumber()
                                       : kMaxSequenceNumber;
